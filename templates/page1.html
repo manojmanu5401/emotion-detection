@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600&family=Quicksand:wght@300;400;700&family=Tilt+Neon&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<script src="https://cdn.tailwindcss.com"></script>
+<body class="flex justify-content items-center h-screen">
+    <div class="contianer flex mx-auto justify-center">
+        <div class="flex justify-center items-center">
+            <div class="w-96">
+                <h1 class="text-7xl mb-10">Transform your mood into melodies</h1>
+                <a href="{{url_for('detect')}}">
+                    <button class="w-full bg-transparent hover:bg-[#445D48] cursor-pointer text-[#445D48] font-semibold hover:text-white py-4 px-10 border border-[#445D48] hover:border-transparent rounded-xl tracking-widest">START</button>
+                </a>
+            </div>
+            <img class="w-[500px]" src="../static/music.gif" alt="">
+        </div>
+    </div>
+</body>
+</html>
