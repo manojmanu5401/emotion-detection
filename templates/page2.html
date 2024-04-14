@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600&family=Quicksand:wght@300;400;700&family=Tilt+Neon&display=swap" rel="stylesheet">
     <title>Document</title>
 </head>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -20,28 +21,12 @@
                     <!-- Your captured image will appear here... -->
                 </div>
                 <form>
-                    <div id="pre_take_buttons">
-                      <!-- This button is shown before the user takes a snapshot -->
-                      <input
-                        type="button"
-                        class="btn btn-success btn-squared"
-                        value="CAPTURE"
-                        onClick="preview_snapshot()"
-                      />
-                    </div>
-            
-                    <div id="post_take_buttons" style="display: none">
+                    <div id="post_take_buttons">
                       <!-- These buttons are shown after a snapshot is taken -->
                       <input
                         type="button"
-                        class="btn btn-danger btn-squared responsive-width"
-                        value="&lt; AGAIN"
-                        onClick="cancel_preview()"
-                      />
-                      <input
-                        type="button"
-                        class="btn btn-success btn-squared responsive-width"
-                        value="SAVE &gt;"
+                        class="mt-5 w-full bg-transparent hover:bg-[#445D48] cursor-pointer text-[#445D48] font-semibold hover:text-white py-4 px-10 border border-[#445D48] hover:border-transparent rounded-xl tracking-widest"
+                        value="ANALYSE"
                         onClick="save_photo()"
                         style="font-weight: bold"
                       />
@@ -76,37 +61,21 @@
       flip_horiz: true,
     });
     Webcam.attach("#my_camera");
-  </script>
-  <script language="JavaScript">
+</script>
+<script language="JavaScript">
     // preload shutter audio clip
-
     function preview_snapshot() {
-      // play sound effect
-      // freeze camera so user can preview current frame
       Webcam.freeze();
-
-      // swap button sets
-      document.getElementById("pre_take_buttons").style.display = "none";
-      document.getElementById("post_take_buttons").style.display = "";
     }
 
     function cancel_preview() {
-      // cancel preview freeze and return to live camera view
       Webcam.unfreeze();
-
-      // swap buttons back to first set
       document.getElementById("pre_take_buttons").style.display = "";
       document.getElementById("post_take_buttons").style.display = "none";
     }
 
     function save_photo() {
-      // actually snap photo (from preview freeze).
       Webcam.snap(function (data_uri) {
-        // display results in page
-        console.log(data_uri.split(",")[0]);
-        console.log(data_uri.split(",")[1]);
-        // shut down camera, stop capturing
-        Webcam.reset();
         const request = {
           photo_cap: data_uri.split(",")[1],
         };
@@ -116,16 +85,18 @@
             "Content-Type": "application/json",
           })
           .then((response) => {
-            // var response = data.response;
             console.log("response:", response);
           })
           .catch((e) => console.log(e));
-        // $.getJSON('http://127.0.0.1:5000' + '/_photo_cap', {
-        //     photo_cap: data_uri,
-        // },function(data){
-        //     var response = data.response;
-        // });
+        
+        axios
+        .get("http://127.0.0.1:5000/analyse")
+        .then((response)=>{
+          console.log("analysis:", response);
+        })
+        .catch((e) => console.log(e));
+        
       });
     }
-  </script>
+</script>
 </html>

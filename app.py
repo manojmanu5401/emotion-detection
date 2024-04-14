@@ -6,6 +6,11 @@ import base64;
 
 app = Flask(__name__)
 
+
+@app.route('/music')
+def music():
+    return render_template('musicpage.html', emotions=emotions, dominant_emotion=dominant_emotion)
+
 @app.route('/')
 def index():
     return render_template('page1.html')
@@ -16,9 +21,11 @@ def detect():
                             
 @app.route('/analyse')
 def analyse():
-    objs = DeepFace.analyze(img_path = "./static/images/photo.jpg", actions = ['emotion'])
-    print(objs)
-    return objs
+    objs = DeepFace.analyze(img_path = "./static/images/photo.jpeg", actions = ['emotion'])
+    emotions = objs[0].get('emotion')
+    dominant_emotion = objs[0].get('dominant_emotion')
+    print(emotions, dominant_emotion)
+    return render_template('musicpage.html', emotions=emotions, dominant_emotion=dominant_emotion)
 
 
 @app.route('/photo_cap', methods=['POST'])
