@@ -1,16 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600&family=Quicksand:wght@300;400;700&family=Tilt+Neon&display=swap" rel="stylesheet">
-    <title>Music</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600&family=Quicksand:wght@300;400;700&family=Tilt+Neon&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../static/styles.css" />
+  <title>Music</title>
 </head>
-<body>
-    <div>
-       {{dominant_emotion}}
-       {{emotions}}
+
+<body class="flex justify-content items-center h-screen">
+  <div class="container mx-auto">
+    <div class="flex min-h-screen flex-col justify-center items-center overflow-hidden bg-white py-6 sm:py-12">
+      <div
+        class="mx-auto flex gap-x-[200px] justify-center items-center max-w-8xl rounded-3xl bg-white p-16 text-center shadow-lg">
+        <div>
+          <p class="text-3xl">
+            <span class="text-[#445D48] font-bold">{{dominant_emotion}}</span>
+          </p>
+          <img class="w-[350px]" src="../static/emotions/{{dominant_emotion}}.png" alt="" />
+          <div class="mt-3 flex flex-col gap-y-2">
+            {% for item in emotions%}
+                <div class="flex justify-evenly items-center gap-x-4">
+                    <p>{{item[0]}}</p>
+                    <div class="h-2 w-full bg-neutral-200 rounded">
+                        <div class="h-2 bg-[#445D48] rounded w-[{{item[1]}}%]"></div>
+                    </div>
+                    <p>{{item[1]}}</p>
+                </div>
+                {% endfor %}
+            <!-- <div class="flex justify-evenly items-center gap-x-4">
+              <p>Angry</p>
+              <div class="h-2 w-full bg-neutral-200 rounded">
+                <div class="h-2 bg-orange-500 rounded" style="width: 25%"></div>
+              </div>
+              <p>25%</p>
+            </div>
+            <div class="flex justify-evenly items-center gap-x-4">
+              <p>Angry</p>
+              <div class="h-2 w-full bg-neutral-200 rounded">
+                <div class="h-2 bg-orange-500 rounded" style="width: 25%"></div>
+              </div>
+              <p>25%</p>
+            </div> -->
+          </div>
+        </div>
+        <div class="conainter mx-auto p-10 relative overflow-hidden container2">
+          <div class="img-area w-full h-[280px] overflow-hidden mt-10 rounded">
+            <img class="w-full h-full object-cover" src="../static/disc.png" alt="" />
+          </div>
+          <div class="song-details">
+            <p class="name text-2xl">Song name</p>
+            <p class="artist opacity-25">S P Bala subramanyam</p>
+          </div>
+          <div class="progress-area mt-10 h-[6px] w-full rounded bg-gray-200 cursor-pointer">
+            <div class="progress-bar h-[6px] w-0 relative rounded bg-[#445D48]">
+              <audio id="main-audio" src=""></audio>
+            </div>
+            <div class="song-timer mt-[2px] text-[13px] text-[#445D48] flex align-center justify-between">
+              <span class="current-time">0.00</span>
+              <span class="max-duration">0.00</span>
+            </div>
+            <audio id="main-audio" src=""></audio>
+          </div>
+          <div class="controls flex align-center justify-between mt-10">
+            <span id="repeat-plist" class="material-symbols-outlined">repeat</span>
+            <span id="prev" class="material-symbols-outlined mr-[-13px] text-[38px]">fast_rewind</span>
+            <div class="play-pause">
+              <span class="material-symbols-outlined">play_arrow</span>
+            </div>
+            <span id="next" class="material-symbols-outlined ml-[-13px] text-[38px]">fast_forward</span>
+            <span id="more-music" class="material-symbols-outlined">queue_music</span>
+          </div>
+          <div
+            class="music-list absolute w-full left-0 bottom-[-55%] transition ease-in-out duration-300 pointer-events-none opacity-0 z-10 p-5 bg-[#7f8f81] rounded-lg">
+            <div class="header flex justify-between items-center mb-2 text-white">
+              <div class="row flex items-center text-lg">
+                <span id="more-music" class="material-symbols-outlined">queue_music</span>
+                <span>Music List</span>
+              </div>
+              <span id="close" class="material-symbols-outlined cursor-pointer">close</span>
+            </div>
+            <ul class="overflow-auto max-h-[200px] ul"></ul>
+          </div>
+          <div class="mt-10">
+            <a href="{{url_for('detect')}}">
+              <button class="w-full bg-transparent hover:bg-[#445D48] cursor-pointer text-[#445D48] font-semibold hover:text-white py-4 px-10 border border-[#445D48] hover:border-transparent rounded-xl tracking-widest">Re-Analyse</button>
+          </a>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </body>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="../static/js/musicData.js"></script>
+<script>
+  const container = document.querySelector(".container2");
+  const musicName = document.querySelector(".song-details .name");
+  const musicArtist = document.querySelector(".song-details .artist");
+  const mainAudio = document.querySelector("#main-audio");
+  const playpausebtn = document.querySelector(".play-pause");
+  const nextbtn = document.querySelector("#next");
+  const prevbtn = document.querySelector("#prev");
+  const progressbar = document.querySelector(".progress-bar");
+  const musicCurrentTime = document.querySelector(".current-time");
+  const musicDuration = document.querySelector(".max-duration");
+  const progressarea = document.querySelector(".progress-area");
+  const musicList = document.querySelector(".music-list");
+  const moreMusicbtn = document.querySelector("#more-music");
+  const close = document.querySelector("#close");
+  const songsList = document.querySelector(".ul");
+  const imgArea = document.querySelector(".img-area");
+  const prop = [
+    {
+      transform: "rotate(360deg)",
+    },
+  ];
+  const config = {
+    duration: 5000,
+    iterations: Infinity,
+  };
+  const animation = imgArea.animate(prop, config);
+  let musicIndex = 0;
+  let emotion = `{{dominant_emotion}}`;
+  // let emotion = `neutral`;
+
+  window.addEventListener("load", () => {
+    console.log(music_data[emotion])
+    loadMusic(musicIndex);
+    playMusic();
+    playingSong();
+  });
+
+  function loadMusic(indexNumber) {
+    musicName.innerHTML = music_data[emotion][indexNumber].name;
+    musicArtist.innerHTML = music_data[emotion][indexNumber].artist;
+    mainAudio.src = `../static/songs/${emotion}/${music_data[emotion][indexNumber].src}.mp3`;
+  }
+
+  function playMusic() {
+    animation.play()
+    container.classList.add("paused");
+    playpausebtn.querySelector("span").innerHTML = "pause";
+    mainAudio.play();
+  }
+
+  function pauseMusic() {
+    animation.pause();
+    container.classList.remove("paused");
+    playpausebtn.querySelector("span").innerHTML = "play_arrow";
+    mainAudio.pause();
+  }
+
+  function nextMusic() {
+    musicIndex++;
+    musicIndex > music_data[emotion].length
+      ? (musicIndex = 1)
+      : (musicIndex = musicIndex);
+    loadMusic(musicIndex);
+    playMusic();
+    playingSong();
+  }
+
+  function prevMusic() {
+    musicIndex--;
+    musicIndex < 1
+      ? (musicIndex = music_data[emotion].length)
+      : (musicIndex = musicIndex);
+    loadMusic(musicIndex);
+    playMusic();
+    playingSong();
+  }
+
+  //play or music button events
+  playpausebtn.addEventListener("click", () => {
+    const isMusicPaused = container.classList.contains("paused");
+    isMusicPaused ? pauseMusic() : playMusic();
+  });
+
+  //next and prev button events
+  nextbtn.addEventListener("click", () => {
+    nextMusic();
+  });
+
+  prevbtn.addEventListener("click", () => {
+    prevMusic();
+  });
+
+  //update progressbar according to the time
+  mainAudio.addEventListener("timeupdate", (e) => {
+    const currentTime = e.target.currentTime;
+    const duration = e.target.duration;
+    let progressWidth = (currentTime / duration) * 100;
+    progressbar.style.width = `${progressWidth}%`;
+
+    //update total song duration
+    mainAudio.addEventListener("loadeddata", () => {
+      let duration = mainAudio.duration;
+      let totalMin = Math.floor(duration / 60);
+      let totalSec = Math.floor(duration % 60);
+      if (totalSec < 10) {
+        totalSec = `0${totalSec}`;
+      }
+
+      musicDuration.innerHTML = `${totalMin}:${totalSec}`;
+    });
+    //update playing song current time
+    let currentMin = Math.floor(currentTime / 60);
+    let currentSec = Math.floor(currentTime % 60);
+    if (currentSec < 10) {
+      currentSec = `0${currentSec}`;
+    }
+
+    musicCurrentTime.innerHTML = `${currentMin}:${currentSec}`;
+
+    const totalDuration = mainAudio.duration;
+    let totalMin = Math.floor(totalDuration / 60);
+    let totalSec = Math.floor(totalDuration % 60);
+    if (totalSec < 10) {
+      totalSec = `0${totalSec}`;
+    }
+
+    if (totalMin == currentMin && totalSec == currentSec) {
+      nextMusic();
+    }
+  });
+
+  //update playing song current width
+  progressarea.addEventListener("click", (e) => {
+    let progressWidth = progressarea.clientWidth;
+    let clickedOffsetX = e.offsetX;
+    let songDuration = mainAudio.duration;
+
+    mainAudio.currentTime = (clickedOffsetX / progressWidth) * songDuration;
+    playMusic();
+  });
+
+  //more music btn
+  moreMusicbtn.addEventListener("click", (e) => {
+    musicList.classList.toggle("show");
+  });
+
+  close.addEventListener("click", (e) => {
+    moreMusicbtn.click();
+  });
+
+  // generate songs list
+  for (let i = 0; i < music_data[emotion].length; i++) {
+    let liTag = `<li li-index=${i} class="li flex justify-between items-center pb-2 mt-2 border-b-2 border-[#667969] cursor-pointer hover:text-white">
+                  <div class="row text-start">
+                    <span class="text-md">${music_data[emotion][i].name}</span>
+                    <p class="text-sm opacity-50">${music_data[emotion][i].artist}</p>
+                  </div>
+                  <audio class="${music_data[emotion][i].src}" src="../static/songs/${emotion}/${music_data[emotion][i].src}.mp3"></audio>
+                  <span id="${music_data[emotion][i].src}" class="audio-duration text-sm">1:45</span>
+                </li>`;
+    songsList.insertAdjacentHTML("beforeend", liTag);
+
+    let audioDurationTag = songsList.querySelector(
+      `#${music_data[emotion][i].src}`
+    );
+    let liAudioTag = songsList.querySelector(
+      `.${music_data[emotion][i].src}`
+    );
+
+    liAudioTag.addEventListener("loadeddata", () => {
+      let duration = liAudioTag.duration;
+      let totalMin = Math.floor(duration / 60);
+      let totalSec = Math.floor(duration % 60);
+      if (totalSec < 10) {
+        totalSec = `0${totalSec}`;
+      }
+
+      audioDurationTag.innerHTML = `${totalMin}:${totalSec}`;
+      audioDurationTag.setAttribute("t-duration", `${totalMin}:${totalSec}`);
+    });
+  }
+
+  //play particular song from the list
+  function playingSong() {
+    const allLiTags = songsList.querySelectorAll(".li");
+    for (let j = 0; j < allLiTags.length; j++) {
+      let audioTag = allLiTags[j].querySelector(".audio-duration");
+
+      if (allLiTags[j].classList.contains("playing")) {
+        allLiTags[j].classList.remove("playing");
+        audioTag.innerHTML = audioTag.getAttribute("t-duration");
+      }
+
+      if (allLiTags[j].getAttribute("li-index") == musicIndex) {
+        allLiTags[j].classList.add("playing");
+        audioTag.innerHTML = `<span class="material-symbols-outlined">graphic_eq</span>`;
+      }
+      allLiTags[j].setAttribute("onclick", "clicked(this)");
+    }
+  }
+
+  function clicked(element) {
+    let getLiIndex = element.getAttribute("li-index");
+    musicIndex = getLiIndex;
+    loadMusic(musicIndex);
+    moreMusicbtn.click();
+    playMusic();
+    playingSong();
+  }
+</script>
+
 </html>

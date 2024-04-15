@@ -11,30 +11,19 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <body class="flex justify-content items-center h-screen">
     <div class="container mx-auto">
-        <div class="flex min-h-screen flex-col justify-center overflow-hidden bg-white py-6 sm:py-12">
-            <div class="mx-auto max-w-4xl rounded-3xl bg-white p-20 text-center shadow-lg">
+        <div class="flex min-h-screen flex-col justify-center items-center overflow-hidden bg-white py-6 sm:py-12">
+            <div class="mx-auto max-w-4xl rounded-3xl bg-white p-16 text-center shadow-lg">
               <h2 class="text-5xl font-bold leading-tight ">Please look at the camera</h2>
-              <p class="mt-5 text-xl leading-8 text-[#445D48]">Elevate your listening experience with our emotion-based music selection.</p>
-              <div id="my_photo_booth">
+              <p class="mt-2 text-xl leading-8 text-[#445D48]">Elevate your listening experience with our emotion-based music selection.</p>
+              <div id="my_photo_booth" class= "flex flex-col items-end">
                 <div id="my_camera" class="mt-5 mr-1"></div>
-                <div id="results" class="mt-5 mr-1 hidden">
-                    <!-- Your captured image will appear here... -->
+                <div class ="flex flex-row justify-center align-center mt-3 hidden" id="load">
+                  <p class="font-bold text-lg" id="text">Detecting Face</p>
+                  <img class="w-[50px]" src="../static/loading.gif" alt="">
                 </div>
-                <form>
-                    <div id="post_take_buttons">
-                      <!-- These buttons are shown after a snapshot is taken -->
-                      <input
-                        type="button"
-                        class="mt-5 w-full bg-transparent hover:bg-[#445D48] cursor-pointer text-[#445D48] font-semibold hover:text-white py-4 px-10 border border-[#445D48] hover:border-transparent rounded-xl tracking-widest"
-                        value="ANALYSE"
-                        onClick="save_photo()"
-                        style="font-weight: bold"
-                      />
-                    </div>
-                  </form>
-              </div>
-              
+                <p class="mt-2 text-orange-600 font-bold hidden" id="warning">No Face Detected. Please try again..</p>
             </div>
+            
         </div>
     </div>
 </div>
@@ -64,18 +53,19 @@
 </script>
 <script language="JavaScript">
     // preload shutter audio clip
-    function preview_snapshot() {
-      Webcam.freeze();
-    }
-
-    function cancel_preview() {
-      Webcam.unfreeze();
-      document.getElementById("pre_take_buttons").style.display = "";
-      document.getElementById("post_take_buttons").style.display = "none";
-    }
-
+   window.onload = function() {
+    save_photo()
+   }
     function save_photo() {
-      Webcam.snap(function (data_uri) {
+      Webcam.on('load', function() {
+        var loading = document.getElementById("load")
+        var text = document.getElementById("text")
+        var warning = document.getElementById("warning")
+        loading.classList.remove("hidden")
+        // loading.classList.add()
+       setTimeout(function() {
+        text.innerText = "Analysing"
+        Webcam.snap(function (data_uri) {
         const request = {
           photo_cap: data_uri.split(",")[1],
         };
@@ -93,10 +83,22 @@
         .get("http://127.0.0.1:5000/analyse")
         .then((response)=>{
           console.log("analysis:", response);
+          loading.classList.add("hidden")
+          text.innerText ="Detecting Face"
+          window.location.href = 'http://127.0.0.1:5000/music'
         })
-        .catch((e) => console.log(e));
+        .catch((e) => {
+          console.log(e)
+          loading.classList.add("hidden")
+          text.innerText ="Detecting Face"
+          warning.classList.remove("hidden")
+        }
+        );
         
       });
+       }, 3000);
+      })
+      
     }
 </script>
 </html>

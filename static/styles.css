@@ -1,0 +1,52 @@
+.progress-bar::before{
+    content: '';
+    position: absolute;
+    height: 12px;
+    width: 12px;
+    border-radius:50%;
+    top:50%;
+    right: -5px;
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) !important;
+    background: inherit;
+    transition: opacity 0.2s ease;
+}
+
+.progress-area:hover .progress-bar::before{
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.controls span{
+    user-select: none;
+    font-size: 28px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    cursor: pointer;
+}
+
+.controls span:nth-child(2),
+.controls span:nth-child(4){
+    font-size: 30px;
+}
+
+.music-list ul li:last-child{
+    border-bottom: 0px;
+}
+
+.music-list ul::-webkit-scrollbar{
+    width:0;
+}
+
+ul li.playing{
+    pointer-events: none;
+    color: white;
+}
+
+.music-list.show{
+    bottom:0;
+    opacity:1;
+    pointer-events:auto;
+}

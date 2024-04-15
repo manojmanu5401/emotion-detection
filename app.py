@@ -2,10 +2,10 @@ from deepface import DeepFace
 from flask import Flask, render_template, Response, jsonify, request
 import os
 import base64;
+import math;
 
 
 app = Flask(__name__)
-
 
 @app.route('/music')
 def music():
@@ -21,10 +21,15 @@ def detect():
                             
 @app.route('/analyse')
 def analyse():
+    global emotions, dominant_emotion
     objs = DeepFace.analyze(img_path = "./static/images/photo.jpeg", actions = ['emotion'])
-    emotions = objs[0].get('emotion')
+    emotions_dict = objs[0].get('emotion')
+    new_list = []
+    for key, val in emotions_dict.items(): 
+        new_list.append([key, int(math.floor(val))]) 
+    emotions = new_list
     dominant_emotion = objs[0].get('dominant_emotion')
-    print(emotions, dominant_emotion)
+    print(objs)
     return render_template('musicpage.html', emotions=emotions, dominant_emotion=dominant_emotion)
 
 
