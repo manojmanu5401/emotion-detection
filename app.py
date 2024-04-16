@@ -43,7 +43,7 @@ def photo_cap():
     with open(os.path.join(app.root_path,"static/images",image_name), "wb") as f:
         f.write(binary_data)
     
-    response = 'your response'
+    response = 'face detected'
 
     return response
 
