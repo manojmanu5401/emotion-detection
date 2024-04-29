@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600&family=Quicksand:wght@300;400;700&family=Tilt+Neon&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <title>Document</title>
 </head>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -21,7 +22,12 @@
                   <p class="font-bold text-lg" id="text">Detecting Face</p>
                   <img class="w-[50px]" src="../static/loading.gif" alt="">
                 </div>
-                <p class="mt-2 text-orange-600 font-bold hidden" id="warning">No Face Detected. Please try again..</p>
+                <div class ="flex flex-row justify-center align-center mt-2 hidden text-orange-600 cursor-pointer" id="warning">
+                  <p class="font-bold" >No Face Detected. Please try again..</p>
+                  <span class="material-symbols-outlined">
+                    refresh
+                    </span>
+                </div>
             </div>
             
         </div>
@@ -58,11 +64,11 @@
    }
     function save_photo() {
       Webcam.on('load', function() {
-        var loading = document.getElementById("load")
-        var text = document.getElementById("text")
-        var warning = document.getElementById("warning")
+        const loading = document.getElementById("load")
+        const text = document.getElementById("text")
+        const warning = document.querySelector("#warning")
+
         loading.classList.remove("hidden")
-        // loading.classList.add()
        setTimeout(function() {
         text.innerText = "Analysing"
         Webcam.snap(function (data_uri) {
@@ -97,6 +103,11 @@
         
       });
        }, 3000);
+      })
+
+      //page relaod
+      warning.addEventListener("click", () => {
+        window.location.reload();
       })
       
     }
